@@ -1,4 +1,4 @@
-import { useState,useEffect } from 'react'; // ✅ this is fine
+import { useState, useEffect } from 'react'; // ✅ this is fine
 import './App.css';
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
@@ -121,6 +121,7 @@ function App() {
   };
 
   // Filter
+  // Filter only (no sort)
   const filteredTasks = tasks.filter((t) => {
     const matchesFilter =
       filterBy === "completed"
@@ -134,13 +135,9 @@ function App() {
     return matchesFilter && matchesSearch;
   });
 
+
   // Sort
-  const sortedTasks = [...filteredTasks].sort((a, b) => {
-    if (sortBy === "status") {
-      return a.completed - b.completed;
-    }
-    return new Date(a.createdAt) - new Date(b.createdAt);
-  });
+ 
 
   return (
     <div className="app">
@@ -198,50 +195,51 @@ function App() {
                 {...provided.droppableProps}
                 ref={provided.innerRef}
               >
-                {sortedTasks.length===0 ? (
+                {filteredTasks.length === 0 ? (
                   <li className="empty-task">No tasks found.</li>
                 ) : (
-                sortedTasks.map((t, index) => (
-                  <Draggable key={t.id} draggableId={t.id.toString()} index={index}>
-                    {(provided) => (
-                      <li
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        className={`task-item ${t.completed ? "completed" : ""}`}
-                      >
-                        {editing === t.id ? (
-                          <>
-                            <input
-                              type="text"
-                              value={editText}
-                              onChange={(e) => setEditText(e.target.value)}
-                            />
-                            <button onClick={saveEditedTask}>Save</button>
-                            <button onClick={() => setEditing(null)}>Cancel</button>
-                          </>
-                        ) : (
-                          <>
-                            <span>{t.text}</span>
-                            {t.dueDate && (
-                              <div className="due-date">
-                                Due: {t.dueDate} {t.dueTime || ""}
-                              </div>
-                            )}
-                            <span className={`priority ${t.priority}`}>
-                              {t.priority.toUpperCase()}
-                            </span>
-                            <button onClick={() => toggleTaskCompletion(t.id)}>
-                              {t.completed ? "Undo" : "Complete"}
-                            </button>
-                            <button onClick={() => startEditing(t.id, t.text)}>Edit</button>
-                            <button onClick={() => deleteTask(t.id)}>Delete</button>
-                          </>
-                        )}
-                      </li>
-                    )}
-                  </Draggable>
-                ))
+                  filteredTasks.map((t, index) => (
+                    <Draggable key={t.id} draggableId={t.id.toString()} index={index}>
+                      {(provided) => (
+                        <li
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          className={`task-item ${t.completed ? "completed" : ""}`}
+                        >
+                          {editing === t.id ? (
+                            <>
+                              <input
+                                type="text"
+                                value={editText}
+                                onChange={(e) => setEditText(e.target.value)}
+                              />
+                              <button onClick={saveEditedTask}>Save</button>
+                              <button onClick={() => setEditing(null)}>Cancel</button>
+                            </>
+                          ) : (
+                            <>
+                              <span>{t.text}</span>
+                              {t.dueDate && (
+                                <div className="due-date">
+                                  Due: {t.dueDate} {t.dueTime || ""}
+                                </div>
+                              )}
+                              <span className={`priority ${t.priority}`}>
+                                {t.priority ? t.priority.toUpperCase() : "LOW"}
+
+                              </span>
+                              <button onClick={() => toggleTaskCompletion(t.id)}>
+                                {t.completed ? "Undo" : "Complete"}
+                              </button>
+                              <button onClick={() => startEditing(t.id, t.text)}>Edit</button>
+                              <button onClick={() => deleteTask(t.id)}>Delete</button>
+                            </>
+                          )}
+                        </li>
+                      )}
+                    </Draggable>
+                  ))
                 )}
                 {provided.placeholder}
               </ul>
