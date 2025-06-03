@@ -1,9 +1,9 @@
 /* Import Google Font */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
 
 /* Reset and base */
 body {
-  font-family: 'Poppins', 'Segoe UI', sans-serif;
+  font-family: "Poppins", "Segoe UI", sans-serif;
   margin: 0;
   padding: 0;
   background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
@@ -231,6 +231,26 @@ footer {
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 6px;
+}
+.input-with-icon {
+  position: relative;
+  display: inline-block;
+  width: fit-content;
+}
+
+.input-with-icon input {
+  padding-right: 10px; /* room for icon */
+  height: 35px;
+  font-size: 1rem;
+}
+
+.input-with-icon .icon {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  pointer-events: none; /* 👈 important: allows click-through */
 }
 
 /* Animations */

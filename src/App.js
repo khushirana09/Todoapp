@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react'; // ✅ this is fine
-import './App.css';
+import { useState, useEffect } from "react"; // ✅ this is fine
+import "./App.css";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-
 
 function App() {
   const [task, setTask] = useState("");
@@ -16,7 +15,6 @@ function App() {
   const [editText, setEditText] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
-
   // Save to localStorage on update
   useEffect(() => {
     localStorage.setItem("tasks", JSON.stringify(tasks));
@@ -28,8 +26,6 @@ function App() {
     const dueDate = document.getElementById("taskDate").value;
     const dueTime = document.getElementById("taskTime").value;
     const priority = document.getElementById("taskPriority").value;
-
-
 
     if (!taskText) return alert("Please enter a task");
 
@@ -92,9 +88,7 @@ function App() {
   // Toggle complete
   const toggleTaskCompletion = (id) => {
     setTasks(
-      tasks.map((t) =>
-        t.id === id ? { ...t, completed: !t.completed } : t
-      )
+      tasks.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
     );
   };
 
@@ -112,9 +106,7 @@ function App() {
   // Save edit
   const saveEditedTask = () => {
     setTasks(
-      tasks.map((t) =>
-        t.id === editing ? { ...t, text: editText } : t
-      )
+      tasks.map((t) => (t.id === editing ? { ...t, text: editText } : t))
     );
     setEditing(null);
     setEditText("");
@@ -127,17 +119,17 @@ function App() {
       filterBy === "completed"
         ? t.completed
         : filterBy === "pending"
-          ? !t.completed
-          : true;
+        ? !t.completed
+        : true;
 
-    const matchesSearch = t.text.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = t.text
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
 
     return matchesFilter && matchesSearch;
   });
 
-
   // Sort
-
 
   return (
     <div className="app">
@@ -162,8 +154,14 @@ function App() {
             value={task}
             onChange={(e) => setTask(e.target.value)}
           />
-          <input type="date" id="taskDate" />
-          <input type="time" id="taskTime" />
+          <div className="input-with-icon">
+            <input type="date" id="taskDate" />
+            <span className="icon">📅</span>
+          </div>
+          <div className="input-with-icon">
+            <input type="time" id="taskTime" />
+            <span className="icon">🕒</span>
+          </div>
 
           <select id="taskPriority">
             <option value="low">🟢 Low</option>
@@ -175,7 +173,10 @@ function App() {
 
         {/* Filter and Sort */}
         <div className="filters">
-          <select value={filterBy} onChange={(e) => setFilterBy(e.target.value)}>
+          <select
+            value={filterBy}
+            onChange={(e) => setFilterBy(e.target.value)}
+          >
             <option value="all">All</option>
             <option value="completed">Completed</option>
             <option value="pending">Pending</option>
@@ -199,13 +200,19 @@ function App() {
                   <li className="empty-task">No tasks found.</li>
                 ) : (
                   filteredTasks.map((t, index) => (
-                    <Draggable key={t.id} draggableId={t.id.toString()} index={index}>
+                    <Draggable
+                      key={t.id}
+                      draggableId={t.id.toString()}
+                      index={index}
+                    >
                       {(provided) => (
                         <li
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
-                          className={`task-item ${t.completed ? "completed" : ""}`}
+                          className={`task-item ${
+                            t.completed ? "completed" : ""
+                          }`}
                         >
                           {editing === t.id ? (
                             <>
@@ -215,25 +222,35 @@ function App() {
                                 onChange={(e) => setEditText(e.target.value)}
                               />
                               <button onClick={saveEditedTask}>Save</button>
-                              <button onClick={() => setEditing(null)}>Cancel</button>
+                              <button onClick={() => setEditing(null)}>
+                                Cancel
+                              </button>
                             </>
                           ) : (
                             <>
                               <span>{t.text}</span>
                               {t.dueDate && (
                                 <div className="due-date">
-                                  Due: {t.dueDate} {t.dueTime || ""}
+                                  📅 {t.dueDate}{" "}
+                                  {t.dueTime && <>🕒 {t.dueTime}</>}
                                 </div>
                               )}
                               <span className={`priority ${t.priority}`}>
                                 {t.priority ? t.priority.toUpperCase() : "LOW"}
-
                               </span>
-                              <button onClick={() => toggleTaskCompletion(t.id)}>
+                              <button
+                                onClick={() => toggleTaskCompletion(t.id)}
+                              >
                                 {t.completed ? "Undo" : "Complete"}
                               </button>
-                              <button onClick={() => startEditing(t.id, t.text)}>Edit</button>
-                              <button onClick={() => deleteTask(t.id)}>Delete</button>
+                              <button
+                                onClick={() => startEditing(t.id, t.text)}
+                              >
+                                Edit
+                              </button>
+                              <button onClick={() => deleteTask(t.id)}>
+                                Delete
+                              </button>
                             </>
                           )}
                         </li>
@@ -246,7 +263,6 @@ function App() {
             )}
           </Droppable>
         </DragDropContext>
-
 
         {/* Footer */}
         <footer>
