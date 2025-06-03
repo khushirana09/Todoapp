@@ -13,9 +13,14 @@ body {
   justify-content: center;
   min-height: 100vh;
 }
-
+p.copy-ryt {
+  text-align: center;
+  font-size: 14px;
+  color: #888;
+  margin-top: 20px;
+}
 /* App container */
-.app {
+.app-content {
   max-width: 760px;
   width: 100%;
   background-color: #0a0a0a;
@@ -235,6 +240,7 @@ footer {
 .input-with-icon {
   position: relative;
   display: inline-block;
+  margin-right: 5px;
   width: fit-content;
 }
 
@@ -268,13 +274,16 @@ footer {
 
 /* Responsive: Tablet and below */
 @media (max-width: 768px) {
-  .app {
+  .task-list {
+    position: relative;
+  }
+  .app-content {
     padding: 20px 15px;
     border-radius: 16px;
   }
   span.priority {
     position: absolute;
-    right: 85px;
+    right: 25px;
     margin-top: 1px;
     font-size: 11px;
   }
@@ -295,7 +304,6 @@ footer {
     font-size: 14px;
     padding: 10px 12px;
     width: 100%;
-    max-width: 270px;
   }
 
   .add-task button {
@@ -335,19 +343,16 @@ footer {
 
 /* Responsive: Mobile (≤480px) */
 @media (max-width: 480px) {
-  .app {
-    padding: 15px 10px;
-    max-width: 300px;
-    margin: auto;
+  .app-content {
+    max-width: 100%;
+    overflow-x: hidden;
   }
-
+  .task-list {
+    position: relative;
+  }
   .priority {
     padding: 2px 10px;
     font-size: 13px;
-  }
-
-  .search-input {
-    max-width: 280px;
   }
 
   div#root {
@@ -357,12 +362,17 @@ footer {
   .app-content h1 {
     font-size: 20px;
   }
-
+  .schedule-block .input-with-icon:first-child {
+    margin-bottom: 1rem;
+  }
   .add-task {
     flex-direction: column;
-    gap: 8px;
+    gap: 0px;
+    margin-bottom: 0px;
   }
-
+  .add-task > * {
+    margin-bottom: 1rem;
+  }
   .filters select {
     font-size: 14px;
     padding: 8px 10px;
@@ -379,5 +389,20 @@ footer {
 
   footer {
     font-size: 0.75rem;
+  }
+  .add-task input,
+  .add-task select,
+  .add-task button,
+  .search-input,
+  #taskDate,
+  #taskTime,
+  #taskPriority {
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  .input-with-icon {
+    width: 100% !important;
+    display: block;
   }
 }

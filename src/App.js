@@ -136,41 +136,45 @@ function App() {
       <div className="app-content">
         <h1>📝 ToDo App</h1>
 
-        {/* Search bar */}
-        <input
-          type="text"
-          placeholder="Search tasks..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="search-input"
-        />
-
-        {/* Add Task */}
-        <div className="add-task">
-          <input
-            type="text"
-            id="taskInput"
-            placeholder="Enter a task..."
-            value={task}
-            onChange={(e) => setTask(e.target.value)}
-          />
-          <div className="input-with-icon">
-            <input type="date" id="taskDate" />
-            <span className="icon">📅</span>
-          </div>
-          <div className="input-with-icon">
-            <input type="time" id="taskTime" />
-            <span className="icon">🕒</span>
+        <div className="input-content-block">
+          {/* Search bar */}
+          <div className="search-bar">
+            <input
+              type="text"
+              placeholder="Search tasks..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="search-input"
+            />
           </div>
 
-          <select id="taskPriority">
-            <option value="low">🟢 Low</option>
-            <option value="medium">🟡 Medium</option>
-            <option value="high">🔴 High</option>
-          </select>
-          <button onClick={addTask}>Add Task</button>
+          {/* Add Task */}
+          <div className="add-task">
+            <input
+              type="text"
+              id="taskInput"
+              placeholder="Enter a task..."
+              value={task}
+              onChange={(e) => setTask(e.target.value)}
+            />
+            <div className="schedule-block">
+              <div className="input-with-icon">
+                <input type="date" id="taskDate" />
+                <span className="icon">📅</span>
+              </div>
+              <div className="input-with-icon">
+                <input type="time" id="taskTime" />
+                <span className="icon">🕒</span>
+              </div>
+            </div>
+            <select id="taskPriority">
+              <option value="low">🟢 Low</option>
+              <option value="medium">🟡 Medium</option>
+              <option value="high">🔴 High</option>
+            </select>
+            <button onClick={addTask}>Add Task</button>
+          </div>
         </div>
-
         {/* Filter and Sort */}
         <div className="filters">
           <select
@@ -270,7 +274,8 @@ function App() {
         <footer>
           <p>{tasks.filter((t) => !t.completed).length} tasks pending</p>
         </footer>
-      </div>
+      </div>{" "}
+      <p className="copy-ryt">&copy; 2025 Khushi. All rights reserved.</p>
     </div>
   );
 }
