@@ -114,168 +114,181 @@ function App() {
 
   // Filter
   // Filter only (no sort)
-  const filteredTasks = tasks.filter((t) => {
-    const matchesFilter =
-      filterBy === "completed"
-        ? t.completed
-        : filterBy === "pending"
-        ? !t.completed
-        : true;
+  const filteredAndSortedTasks = [...tasks]
+    .filter((t) => {
+      const matchesFilter =
+        filterBy === "completed"
+          ? t.completed
+          : filterBy === "pending"
+          ? !t.completed
+          : true;
 
-    const matchesSearch = t.text
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
+      const matchesSearch = t.text
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
 
-    return matchesFilter && matchesSearch;
-  });
+      return matchesFilter && matchesSearch;
+    })
+    .sort((a, b) => {
+      if (sortBy === "date") {
+        return new Date(a.createdAt) - new Date(b.createdAt);
+      } else if (sortBy === "status") {
+        return a.completed === b.completed ? 0 : a.completed ? 1 : -1;
+      }
+      return 0;
+    });
 
   // Sort
 
   return (
     <div className="app">
       <div className="app-content">
-        <h1>📝 ToDo App</h1>
+        <div className="app-content-block">
+          <h1>📝 ToDo App</h1>
 
-        <div className="input-content-block">
-          {/* Search bar */}
-          <div className="search-bar">
-            <input
-              type="text"
-              placeholder="Search tasks..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="search-input"
-            />
-          </div>
-
-          {/* Add Task */}
-          <div className="add-task">
-            <input
-              type="text"
-              id="taskInput"
-              placeholder="Enter a task..."
-              value={task}
-              onChange={(e) => setTask(e.target.value)}
-            />
-            <div className="schedule-block">
-              <div className="input-with-icon">
-                <input type="date" id="taskDate" />
-                <span className="icon">📅</span>
-              </div>
-              <div className="input-with-icon">
-                <input type="time" id="taskTime" />
-                <span className="icon">🕒</span>
-              </div>
+          <div className="input-content-block">
+            {/* Search bar */}
+            <div className="search-bar">
+              <input
+                type="text"
+                placeholder="Search tasks..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="search-input"
+              />
             </div>
-            <select id="taskPriority">
-              <option value="low">🟢 Low</option>
-              <option value="medium">🟡 Medium</option>
-              <option value="high">🔴 High</option>
-            </select>
-            <button onClick={addTask}>Add Task</button>
+
+            {/* Add Task */}
+            <div className="add-task">
+              <input
+                type="text"
+                id="taskInput"
+                placeholder="Enter a task..."
+                value={task}
+                onChange={(e) => setTask(e.target.value)}
+              />
+              <div className="schedule-block">
+                <div className="input-with-icon">
+                  <input type="date" id="taskDate" />
+                  <span className="icon">📅</span>
+                </div>
+                <div className="input-with-icon">
+                  <input type="time" id="taskTime" />
+                  <span className="icon">🕒</span>
+                </div>
+              </div>
+              <select id="taskPriority">
+                <option value="low">🟢 Low</option>
+                <option value="medium">🟡 Medium</option>
+                <option value="high">🔴 High</option>
+              </select>
+              <button onClick={addTask}>Add Task</button>
+            </div>
           </div>
-        </div>
-        {/* Filter and Sort */}
-        <div className="filters">
-          <select
-            value={filterBy}
-            onChange={(e) => setFilterBy(e.target.value)}
-          >
-            <option value="all">All</option>
-            <option value="completed">Completed</option>
-            <option value="pending">Pending</option>
-          </select>
-          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-            <option value="date">Date</option>
-            <option value="status">Status</option>
-          </select>
-        </div>
+          {/* Filter and Sort */}
+          <div className="filters">
+            <select
+              value={filterBy}
+              onChange={(e) => setFilterBy(e.target.value)}
+            >
+              <option value="all">All</option>
+              <option value="completed">Completed</option>
+              <option value="pending">Pending</option>
+            </select>
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+              <option value="date">Date</option>
+              <option value="status">Status</option>
+            </select>
+          </div>
 
-        {/* Task List */}
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId="taskList">
-            {(provided) => (
-              <ul
-                className="task-list"
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-              >
-                {filteredTasks.length === 0 ? (
-                  <li className="empty-task">No tasks found.</li>
-                ) : (
-                  filteredTasks.map((t, index) => (
-                    <Draggable
-                      key={t.id}
-                      draggableId={t.id.toString()}
-                      index={index}
-                    >
-                      {(provided) => (
-                        <li
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          className={`task-item ${
-                            t.completed ? "completed" : ""
-                          }`}
-                        >
-                          {editing === t.id ? (
-                            <>
-                              <input
-                                type="text"
-                                value={editText}
-                                onChange={(e) => setEditText(e.target.value)}
-                              />
-                              <button onClick={saveEditedTask}>Save</button>
-                              <button onClick={() => setEditing(null)}>
-                                Cancel
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              <span>{t.text}</span>
-                              {t.dueDate && (
-                                <div className="due-date">
-                                  📅 {t.dueDate}{" "}
-                                  {t.dueTime && <>🕒 {t.dueTime}</>}
+          {/* Task List */}
+          <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable droppableId="taskList">
+              {(provided) => (
+                <ul
+                  className="task-list"
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                >
+                  {filteredAndSortedTasks.length === 0 ? (
+                    <li className="empty-task">No tasks found.</li>
+                  ) : (
+                    filteredAndSortedTasks.map((t, index) => (
+                      <Draggable
+                        key={t.id}
+                        draggableId={t.id.toString()}
+                        index={index}
+                      >
+                        {(provided) => (
+                          <li
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            className={`task-item ${
+                              t.completed ? "completed" : ""
+                            }`}
+                          >
+                            {editing === t.id ? (
+                              <>
+                                <input
+                                  type="text"
+                                  value={editText}
+                                  onChange={(e) => setEditText(e.target.value)}
+                                />
+                                <button onClick={saveEditedTask}>Save</button>
+                                <button onClick={() => setEditing(null)}>
+                                  Cancel
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <span>{t.text}</span>
+                                {t.dueDate && (
+                                  <div className="due-date">
+                                    📅 {t.dueDate}{" "}
+                                    {t.dueTime && <>🕒 {t.dueTime}</>}
+                                  </div>
+                                )}
+                                <span className={`priority ${t.priority}`}>
+                                  {t.priority
+                                    ? t.priority.toUpperCase()
+                                    : "LOW"}
+                                </span>
+                                <div className="btn-task-status">
+                                  <button
+                                    onClick={() => toggleTaskCompletion(t.id)}
+                                  >
+                                    {t.completed ? "Undo" : "Complete"}
+                                  </button>
+                                  <button
+                                    onClick={() => startEditing(t.id, t.text)}
+                                  >
+                                    Edit
+                                  </button>
+                                  <button onClick={() => deleteTask(t.id)}>
+                                    Delete
+                                  </button>
                                 </div>
-                              )}
-                              <span className={`priority ${t.priority}`}>
-                                {t.priority ? t.priority.toUpperCase() : "LOW"}
-                              </span>
-                              <div className="btn-task-status">
-                                <button
-                                  onClick={() => toggleTaskCompletion(t.id)}
-                                >
-                                  {t.completed ? "Undo" : "Complete"}
-                                </button>
-                                <button
-                                  onClick={() => startEditing(t.id, t.text)}
-                                >
-                                  Edit
-                                </button>
-                                <button onClick={() => deleteTask(t.id)}>
-                                  Delete
-                                </button>
-                              </div>
-                            </>
-                          )}
-                        </li>
-                      )}
-                    </Draggable>
-                  ))
-                )}
-                {provided.placeholder}
-              </ul>
-            )}
-          </Droppable>
-        </DragDropContext>
+                              </>
+                            )}
+                          </li>
+                        )}
+                      </Draggable>
+                    ))
+                  )}
+                  {provided.placeholder}
+                </ul>
+              )}
+            </Droppable>
+          </DragDropContext>
 
-        {/* Footer */}
-        <footer>
-          <p>{tasks.filter((t) => !t.completed).length} tasks pending</p>
-        </footer>
-      </div>{" "}
-      <p className="copy-ryt">&copy; 2025 Khushi. All rights reserved.</p>
+          {/* Footer */}
+          <footer>
+            <p>{tasks.filter((t) => !t.completed).length} tasks pending</p>
+          </footer>
+        </div>{" "}
+      </div>
+       <p className="copy-ryt">&copy; 2025 Khushi. All rights reserved.</p>
     </div>
   );
 }
