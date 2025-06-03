@@ -15,7 +15,11 @@ body {
   min-height: 100vh;
   overflow-x: hidden; /* Prevent horizontal scroll */
 }
-
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 p.copy-ryt {
   text-align: center;
   font-size: 14px;
@@ -27,6 +31,7 @@ p.copy-ryt {
 .app-content {
   max-width: 760px;
   width: 100%;
+  margin: 0 auto;
   background-color: #0a0a0a;
   padding: 30px 25px;
   border-radius: 20px;
@@ -307,8 +312,10 @@ footer {
 /* ===== Responsive: Tablet and below ===== */
 @media (max-width: 768px) {
   .app-content {
-    padding: 20px 0px;
-    border-radius: 16px;
+    max-width: 100%;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin: 0 5px;
   }
   .add-task input[type="text"] {
     flex: auto;
@@ -363,8 +370,10 @@ footer {
 /* ===== Responsive: Mobile (small devices) ===== */
 @media (max-width: 480px) {
   .app-content {
-    padding: 15px 0px;
-    border-radius: 12px;
+    max-width: 100%;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin: 0 5px;
   }
   .add-task input[type="text"] {
     flex: auto;
