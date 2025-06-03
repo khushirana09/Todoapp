@@ -1,38 +1,95 @@
-import React, { useState, useEffect } from "react";
-import "./App.css";
+import { useState, useEffect } from 'react'; // ✅ this is fine
+import './App.css';
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+
 
 function App() {
-  // State variables
-  const [task, setTask] = useState(""); // For the input field
+  const [task, setTask] = useState("");
   const [tasks, setTasks] = useState(() => {
-    // Retrieve tasks from localStorage or initialize as empty
     const savedTasks = localStorage.getItem("tasks");
     return savedTasks ? JSON.parse(savedTasks) : [];
   });
-  const [filterBy, setFilterBy] = useState("all"); // For filtering tasks
-  const [sortBy, setSortBy] = useState("date"); // For sorting tasks
-  const [editing, setEditing] = useState(null); // For editing mode
-  const [editText, setEditText] = useState(""); // For edit input field
 
-  // Persist tasks to localStorage whenever tasks state changes
+  const [filterBy, setFilterBy] = useState("all");
+  const [sortBy, setSortBy] = useState("date");
+  const [editing, setEditing] = useState(null);
+  const [editText, setEditText] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+
+
+  // Save to localStorage on update
   useEffect(() => {
     localStorage.setItem("tasks", JSON.stringify(tasks));
   }, [tasks]);
 
-  // Add a new task
-  const addTask = () => {
-    if (task.trim() === "") return; // Prevent empty tasks
+  // Add new task
+  function addTask() {
+    const taskText = task.trim();
+    const dueDate = document.getElementById("taskDate").value;
+    const dueTime = document.getElementById("taskTime").value;
+    const priority = document.getElementById("taskPriority").value;
+
+
+
+    if (!taskText) return alert("Please enter a task");
+
     const newTask = {
       id: Date.now(),
-      text: task,
+      text: taskText,
       completed: false,
+      dueDate,
+      dueTime,
+      priority,
       createdAt: new Date().toISOString(),
     };
+
     setTasks([...tasks, newTask]);
-    setTask(""); // Clear the input
+    setTask("");
+    scheduleReminder(newTask);
+  }
+
+  // drag and drop
+  const onDragEnd = (result) => {
+    if (!result.destination) return;
+
+    const newTasks = [...tasks];
+    const [movedTask] = newTasks.splice(result.source.index, 1);
+    newTasks.splice(result.destination.index, 0, movedTask);
+    setTasks(newTasks);
   };
 
-  // Toggle task completion
+  // Reminder logic
+  function scheduleReminder(task) {
+    if (!task.dueDate || !task.dueTime) return;
+
+    const now = new Date();
+    const due = new Date(`${task.dueDate}T${task.dueTime}`);
+    const diff = due.getTime() - now.getTime();
+
+    if (diff > 0) {
+      setTimeout(() => {
+        showNotification(task.text);
+      }, diff);
+    }
+  }
+
+  function showNotification(taskText) {
+    if (Notification.permission === "granted") {
+      new Notification("📝 Task Reminder", {
+        body: `⏰ "${taskText}" is due now!`,
+      });
+    } else if (Notification.permission !== "denied") {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          new Notification("📝 Task Reminder", {
+            body: `⏰ "${taskText}" is due now!`,
+          });
+        }
+      });
+    }
+  }
+
+  // Toggle complete
   const toggleTaskCompletion = (id) => {
     setTasks(
       tasks.map((t) =>
@@ -41,19 +98,19 @@ function App() {
     );
   };
 
-  // Delete a task
+  // Delete
   const deleteTask = (id) => {
     setTasks(tasks.filter((t) => t.id !== id));
   };
 
-  // Start editing a task
+  // Start editing
   const startEditing = (id, currentText) => {
     setEditing(id);
     setEditText(currentText);
   };
 
-  // Save the edited task
-  const saveTask = (id) => {
+  // Save edit
+  const saveEditedTask = () => {
     setTasks(
       tasks.map((t) =>
         t.id === editing ? { ...t, text: editText } : t
@@ -63,82 +120,139 @@ function App() {
     setEditText("");
   };
 
-  // Filtering tasks
+  // Filter
+  // Filter only (no sort)
   const filteredTasks = tasks.filter((t) => {
-    if (filterBy === "completed") return t.completed;
-    if (filterBy === "pending") return !t.completed;
-    return true; // "all"
+    const matchesFilter =
+      filterBy === "completed"
+        ? t.completed
+        : filterBy === "pending"
+          ? !t.completed
+          : true;
+
+    const matchesSearch = t.text.toLowerCase().includes(searchQuery.toLowerCase());
+
+    return matchesFilter && matchesSearch;
   });
 
-  // Sorting tasks
-  const sortedTasks = [...filteredTasks].sort((a, b) => {
-    if (sortBy === "status") {
-      return a.completed - b.completed; // Completed tasks go last
-    }
-    return new Date(a.createdAt) - new Date(b.createdAt); // Older tasks first
-  });
+
+  // Sort
+
 
   return (
     <div className="app">
-      <h1>To-Do App</h1>
+      <div className="app-content">
+        <h1>📝 ToDo App</h1>
 
-      {/* Add Task */}
-      <div className="add-task">
+        {/* Search bar */}
         <input
           type="text"
-          placeholder="Enter a task..."
-          value={task}
-          onChange={(e) => setTask(e.target.value)}
+          placeholder="Search tasks..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="search-input"
         />
-        <button onClick={addTask}>Add Task</button>
-      </div>
 
-      {/* Filters and Sorters */}
-      <div className="filters">
-        <select value={filterBy} onChange={(e) => setFilterBy(e.target.value)}>
-          <option value="all">All</option>
-          <option value="completed">Completed</option>
-          <option value="pending">Pending</option>
-        </select>
-        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-          <option value="date">Date</option>
-          <option value="status">Status</option>
-        </select>
-      </div>
+        {/* Add Task */}
+        <div className="add-task">
+          <input
+            type="text"
+            id="taskInput"
+            placeholder="Enter a task..."
+            value={task}
+            onChange={(e) => setTask(e.target.value)}
+          />
+          <input type="date" id="taskDate" />
+          <input type="time" id="taskTime" />
 
-      {/* Task List */}
-      <ul className="task-list">
-        {sortedTasks.map((t) => (
-          <li key={t.id} className={`task-item ${t.completed ? "completed" : ""}`}>
-            {/* Display task or edit input */}
-            {editing === t.id ? (
-              <>
-                <input
-                  type="text"
-                  value={editText}
-                  onChange={(e) => setEditText(e.target.value)}
-                />
-                <button onClick={() => saveTask(t.id)}>Save</button>
-                <button onClick={() => setEditing(null)}>Cancel</button>
-              </>
-            ) : (
-              <>
-                <span>{t.text}</span>
-                <button onClick={() => toggleTaskCompletion(t.id)}>
-                  {t.completed ? "Undo" : "Complete"}
-                </button>
-                <button onClick={() => startEditing(t.id, t.text)}>Edit</button>
-                <button onClick={() => deleteTask(t.id)}>Delete</button>
-              </>
+          <select id="taskPriority">
+            <option value="low">🟢 Low</option>
+            <option value="medium">🟡 Medium</option>
+            <option value="high">🔴 High</option>
+          </select>
+          <button onClick={addTask}>Add Task</button>
+        </div>
+
+        {/* Filter and Sort */}
+        <div className="filters">
+          <select value={filterBy} onChange={(e) => setFilterBy(e.target.value)}>
+            <option value="all">All</option>
+            <option value="completed">Completed</option>
+            <option value="pending">Pending</option>
+          </select>
+          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+            <option value="date">Date</option>
+            <option value="status">Status</option>
+          </select>
+        </div>
+
+        {/* Task List */}
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId="taskList">
+            {(provided) => (
+              <ul
+                className="task-list"
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+              >
+                {filteredTasks.length === 0 ? (
+                  <li className="empty-task">No tasks found.</li>
+                ) : (
+                  filteredTasks.map((t, index) => (
+                    <Draggable key={t.id} draggableId={t.id.toString()} index={index}>
+                      {(provided) => (
+                        <li
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          className={`task-item ${t.completed ? "completed" : ""}`}
+                        >
+                          {editing === t.id ? (
+                            <>
+                              <input
+                                type="text"
+                                value={editText}
+                                onChange={(e) => setEditText(e.target.value)}
+                              />
+                              <button onClick={saveEditedTask}>Save</button>
+                              <button onClick={() => setEditing(null)}>Cancel</button>
+                            </>
+                          ) : (
+                            <>
+                              <span>{t.text}</span>
+                              {t.dueDate && (
+                                <div className="due-date">
+                                  Due: {t.dueDate} {t.dueTime || ""}
+                                </div>
+                              )}
+                              <span className={`priority ${t.priority}`}>
+                                {t.priority ? t.priority.toUpperCase() : "LOW"}
+
+                              </span>
+                              <button onClick={() => toggleTaskCompletion(t.id)}>
+                                {t.completed ? "Undo" : "Complete"}
+                              </button>
+                              <button onClick={() => startEditing(t.id, t.text)}>Edit</button>
+                              <button onClick={() => deleteTask(t.id)}>Delete</button>
+                            </>
+                          )}
+                        </li>
+                      )}
+                    </Draggable>
+                  ))
+                )}
+                {provided.placeholder}
+              </ul>
             )}
-          </li>
-        ))}
-      </ul>
+          </Droppable>
+        </DragDropContext>
 
-      {/* Footer: Task Count */}
-      <footer>
-        <p>{tasks.filter((t) => !t.completed).length} tasks pending</p>
-      </footer>
+
+        {/* Footer */}
+        <footer>
+          <p>{tasks.filter((t) => !t.completed).length} tasks pending</p>
+        </footer>
+      </div>
     </div>
   );
 }
