@@ -371,6 +371,12 @@ footer {
 
 /* ===== Responsive: Mobile (small devices) ===== */
 @media (max-width: 480px) {
+  span.priority {
+    position: absolute;
+    right: 15px;
+    font-size: 11px;
+    padding: 5px;
+  }
   .app-content {
     max-width: 100vw; /* full viewport width */
     width: 100vw; /* force full width */
@@ -408,6 +414,7 @@ footer {
   .task-item {
     flex-direction: column;
     align-items: flex-start;
+    position: relative;
   }
 
   .task-item button {
