@@ -2,7 +2,7 @@
   "name": "my-todo-list",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://khushirana09.github.io/todo-app",
+  "homepage": "https://todoapp-alpha-six.vercel.app/",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
