@@ -272,7 +272,20 @@ footer {
     padding: 20px 15px;
     border-radius: 16px;
   }
-
+  span.priority {
+    position: absolute;
+    right: 85px;
+    margin-top: 1px;
+    font-size: 11px;
+  }
+  .btn-task-status {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+  }
+  .input-with-icon {
+    width: 100% !important;
+  }
   .app-content h1 {
     font-size: 24px;
     letter-spacing: 1.5px;
@@ -281,6 +294,8 @@ footer {
   .add-task input {
     font-size: 14px;
     padding: 10px 12px;
+    width: 100%;
+    max-width: 270px;
   }
 
   .add-task button {

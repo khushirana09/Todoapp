@@ -238,19 +238,21 @@ function App() {
                               <span className={`priority ${t.priority}`}>
                                 {t.priority ? t.priority.toUpperCase() : "LOW"}
                               </span>
-                              <button
-                                onClick={() => toggleTaskCompletion(t.id)}
-                              >
-                                {t.completed ? "Undo" : "Complete"}
-                              </button>
-                              <button
-                                onClick={() => startEditing(t.id, t.text)}
-                              >
-                                Edit
-                              </button>
-                              <button onClick={() => deleteTask(t.id)}>
-                                Delete
-                              </button>
+                              <div className="btn-task-status">
+                                <button
+                                  onClick={() => toggleTaskCompletion(t.id)}
+                                >
+                                  {t.completed ? "Undo" : "Complete"}
+                                </button>
+                                <button
+                                  onClick={() => startEditing(t.id, t.text)}
+                                >
+                                  Edit
+                                </button>
+                                <button onClick={() => deleteTask(t.id)}>
+                                  Delete
+                                </button>
+                              </div>
                             </>
                           )}
                         </li>
