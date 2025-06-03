@@ -13,7 +13,9 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  overflow-x: hidden; /* Prevent horizontal scroll */
+  overflow-x: hidden;
+  width: 100vw;
+  max-width: 100vw;
 }
 *,
 *::before,
@@ -370,10 +372,12 @@ footer {
 /* ===== Responsive: Mobile (small devices) ===== */
 @media (max-width: 480px) {
   .app-content {
-    max-width: 100%;
+    max-width: 100vw; /* full viewport width */
+    width: 100vw; /* force full width */
     padding-left: 10px;
     padding-right: 10px;
-    margin: 0 5px;
+    margin: 0; /* remove side margin */
+    border-radius: 15px; /* optional: keep it smaller on mobile */
   }
   .add-task input[type="text"] {
     flex: auto;
